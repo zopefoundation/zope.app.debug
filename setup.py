@@ -18,26 +18,35 @@
 ##############################################################################
 """Setup for zope.app.debug package
 
-$Id$
 """
 import os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
+
+tests_require = [
+    'zope.component',
+    'zope.principalregistry',
+    'zope.site',
+    'zope.traversing',
+    'zope.testing',
+    'zope.testrunner',
+]
 
 setup(name='zope.app.debug',
-      version = '3.4.2dev',
+      version='4.0.0.dev0',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Zope Debug Mode',
       long_description=(
-          read('README.txt')
+          read('README.rst')
           + '\n\n' +
-          read('CHANGES.txt')
+          read('CHANGES.rst')
           ),
-      keywords = "zope3 webdav",
-      classifiers = [
+      keywords="zope3 webdav",
+      classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Environment :: Web Environment',
           'Intended Audience :: Developers',
@@ -46,18 +55,32 @@ setup(name='zope.app.debug',
           'Natural Language :: English',
           'Operating System :: OS Independent',
           'Topic :: Internet :: WWW/HTTP',
-          'Framework :: Zope3'],
-      url='http://cheeseshop.python.org/pypi/zope.app.debug',
+          'Framework :: Zope3',
+          'Programming Language :: Python',
+          'Programming Language :: Python :: 2',
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.4',
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: Implementation :: CPython',
+          'Programming Language :: Python :: Implementation :: PyPy',
+      ],
+      url='http://github.com/zopefoundation/zope.app.debug',
       license='ZPL 2.1',
       packages=find_packages('src'),
-      package_dir = {'': 'src'},
+      package_dir={'': 'src'},
       namespace_packages=['zope', 'zope.app'],
-      extras_require = dict(test=['zope.app.testing']),
-      install_requires=['setuptools',
-                        'zope.publisher',
-                        'zope.app.appsetup',
-                        'zope.app.publication'
-                        ],
-      include_package_data = True,
-      zip_safe = False,
-      )
+      extras_require={
+          'test': tests_require,
+      },
+      tests_require=tests_require,
+      install_requires=[
+          'setuptools',
+          'zope.publisher',
+          'zope.app.appsetup',
+          'zope.app.publication'
+      ],
+      include_package_data=True,
+      zip_safe=False,
+)
