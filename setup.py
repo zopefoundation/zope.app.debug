@@ -36,7 +36,7 @@ tests_require = [
 ]
 
 setup(name='zope.app.debug',
-      version='4.0.0.dev0',
+      version='4.0.0',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Zope Debug Mode',
