@@ -19,10 +19,6 @@ __docformat__ = 'restructuredtext'
 
 import base64
 import time
-try:
-    import urllib.parse as urllib
-except ImportError:
-    import urllib
 import sys
 
 from pdb import Pdb
@@ -34,9 +30,20 @@ from zope.app.publication.browser import BrowserPublication
 from zope.app.appsetup import config, database
 
 try:
-    text_type = unicode
+    from time import process_time as time_process_time  # pragma: PY3
+except ImportError:
+    from time import clock as time_process_time  # pragma: PY2
+
+try:
+    import urllib.parse as urllib  # pragma: PY3
+except ImportError:
+    import urllib  # pragma: PY2
+
+try:
+    text_type = unicode  # pragma: PY2
 except NameError:
-    text_type = str
+    text_type = str  # pragma: PY3
+
 
 class Debugger(object):
 
@@ -69,7 +76,7 @@ class Debugger(object):
 
     def _request(self,
                  path='/', stdin='', basic=None,
-                 environment = None, form=None,
+                 environment=None, form=None,
                  request=None, publication=BrowserPublication):
         """Create a request
         """
@@ -96,11 +103,11 @@ class Debugger(object):
             env.update(environment)
 
         if basic:
-            basic_bytes = basic.encode('ascii') if not isinstance(basic, bytes) else basic
+            basic_bytes = basic.encode('ascii') if not isinstance(
+                basic, bytes) else basic
             basic64_bytes = base64.b64encode(basic_bytes)
             basic64 = basic64_bytes.decode('ascii').strip()
             env['HTTP_AUTHORIZATION'] = "Basic %s" % basic64
-
 
         pub = publication(self.db)
 
@@ -116,7 +123,7 @@ class Debugger(object):
         return request
 
     def publish(self, path='/', stdin='', *args, **kw):
-        t, c = time.time(), time.clock()
+        t, pt = time.time(), time_process_time()
 
         request = self._request(path, stdin, *args, **kw)
 
@@ -133,17 +140,17 @@ class Debugger(object):
                 '\r\n'.join([("%s: %s" % h) for h in headers]),
                 request.response.consumeBody(),
             ), file=self.stdout or sys.stdout)
-        return time.time()-t, time.clock()-c, getStatus()
+        return time.time() - t, time_process_time() - pt, getStatus()
 
     def run(self, *args, **kw):
-        t, c = time.time(), time.clock()
+        t, pt = time.time(), time_process_time()
         request = self._request(*args, **kw)
         # agroszer: 2008.feb.1.: if a retry occurs in the publisher,
         # the response will be LOST, so we must accept the returned request
         request = _publish(request, handle_errors=False)
         getStatus = getattr(request.response, 'getStatus', lambda: None)
 
-        return time.time()-t, time.clock()-c, getStatus()
+        return time.time() - t, time_process_time() - pt, getStatus()
 
     def debug(self, *args, **kw):
         out = self.stdout or sys.stdout
@@ -191,12 +198,11 @@ def fbreak(db, meth):
     code = meth.__code__
     lineno = getlineno(code)
     filename = code.co_filename
-    db.set_break(filename,lineno)
-
+    db.set_break(filename, lineno)
 
 
 try:
     from codehack import getlineno
-except:
+except ImportError:
     def getlineno(code):
         return code.co_firstlineno

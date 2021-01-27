@@ -14,25 +14,23 @@
 
 import unittest
 
-if str is bytes:
-    from io import BytesIO as StringIO
-else:
-    from io import StringIO
-
-
 from ZODB.MappingStorage import MappingStorage
 from ZODB.DB import DB
-from zope.testing import cleanup
 from zope.app.debug.debug import Debugger
-
-from zope.configuration import xmlconfig
 
 from zope.component.testlayer import ZCMLFileLayer
 from zope.security.management import endInteraction
 
 import zope.app.debug.tests
 
+if str is bytes:
+    from io import BytesIO as StringIO  # pragma: PY2
+else:
+    from io import StringIO  # pragma: PY3
+
+
 DebugLayer = ZCMLFileLayer(zope.app.debug.tests)
+
 
 class FolderView(object):
 
@@ -42,6 +40,7 @@ class FolderView(object):
 
     def __call__(self):
         return u"Hi"
+
 
 class TestDebugger(unittest.TestCase):
 
@@ -91,7 +90,6 @@ class TestDebugger(unittest.TestCase):
 
             def do_c(self, arg):
                 self.c.append(arg)
-
 
         dbg.Pdb = Pdb
 
@@ -146,7 +144,7 @@ class TestDebugger(unittest.TestCase):
         self.assertEqual(req['k'], 42)
 
         req = dbg._request(basic="foo:bar")
-        self.assertFalse(req.has_key('HTTP_AUTHORIZATION'))
+        self.assertNotIn('HTTP_AUTHORIZATION', req)
         self.assertEqual(req._auth, 'Basic Zm9vOmJhcg==')
 
         # Form
@@ -157,6 +155,7 @@ class TestDebugger(unittest.TestCase):
 
         class Request(object):
             pub = None
+
             def __init__(self, *args):
                 pass
 
@@ -174,6 +173,7 @@ class TestDebugger(unittest.TestCase):
         req = dbg._request(stdin=b'bytes\nlines')
         self.assertEqual(req.bodyStream.readlines(),
                          [b'bytes\n', b'lines'])
+
 
 def test_suite():
     return unittest.defaultTestLoader.loadTestsFromName(__name__)
