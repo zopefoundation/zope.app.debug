@@ -11,10 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Zope Application debugger package
-
-$Id$
-"""
-__docformat__ = 'restructuredtext'
+"""Zope Application debugger package."""
 
 from zope.app.debug.debug import Debugger
