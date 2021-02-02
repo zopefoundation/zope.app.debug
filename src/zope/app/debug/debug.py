@@ -190,6 +190,10 @@ class Debugger(object):
         return dbg
 
 
+def getlineno(code):
+    return code.co_firstlineno
+
+
 def fbreak(db, meth):
     try:
         meth = meth.__func__
@@ -199,10 +203,3 @@ def fbreak(db, meth):
     lineno = getlineno(code)
     filename = code.co_filename
     db.set_break(filename, lineno)
-
-
-try:
-    from codehack import getlineno
-except ImportError:
-    def getlineno(code):
-        return code.co_firstlineno
