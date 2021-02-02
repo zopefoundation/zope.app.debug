@@ -9,6 +9,8 @@
 
 - Drop support for Python 3.4.
 
+- Drop support for ``codehack`` which was in fact never declared.
+
 
 4.0.0 (2017-05-08)
 ==================
