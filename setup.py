@@ -75,6 +75,7 @@ setup(name='zope.app.debug',
       packages=find_packages('src'),
       package_dir={'': 'src'},
       namespace_packages=['zope', 'zope.app'],
+      python_requires='>=3.7',
       extras_require={
           'test': tests_require,
       },

@@ -11,17 +11,14 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Code to initialize the application server
-
-"""
-from __future__ import print_function
-
+"""Code to initialize the application server."""
 
 __docformat__ = 'restructuredtext'
 
 import base64
 import sys
 import time
+import urllib.parse
 from io import BytesIO
 from pdb import Pdb
 
@@ -34,23 +31,7 @@ from zope.publisher.publish import debug_call
 from zope.publisher.publish import publish as _publish
 
 
-try:
-    from time import process_time as time_process_time
-except ImportError:
-    from time import clock as time_process_time
-
-try:
-    import urllib.parse as urllib  # pragma: PY3
-except ImportError:
-    import urllib  # pragma: PY2
-
-try:
-    text_type = unicode  # pragma: PY2
-except NameError:
-    text_type = str  # pragma: PY3
-
-
-class Debugger(object):
+class Debugger:
 
     pdb = Pdb
 
@@ -88,7 +69,7 @@ class Debugger(object):
 
         env = {}
 
-        if isinstance(stdin, text_type):
+        if isinstance(stdin, str):
             stdin = stdin.encode("utf-8")
 
         if isinstance(stdin, bytes):
@@ -102,7 +83,7 @@ class Debugger(object):
         else:
             raise ValueError("Too many ?s in path", path)
 
-        env['PATH_INFO'] = urllib.unquote(env['PATH_INFO'])
+        env['PATH_INFO'] = urllib.parse.unquote(env['PATH_INFO'])
 
         if environment is not None:
             env.update(environment)
@@ -128,7 +109,7 @@ class Debugger(object):
         return request
 
     def publish(self, path='/', stdin='', *args, **kw):
-        t, pt = time.time(), time_process_time()
+        t, pt = time.time(), time.process_time()
 
         request = self._request(path, stdin, *args, **kw)
 
@@ -140,22 +121,22 @@ class Debugger(object):
         headers = sorted(request.response.getHeaders())
 
         print(
-            'Status %s\r\n%s\r\n\r\n%s' % (
+            'Status {}\r\n{}\r\n\r\n{}'.format(
                 request.response.getStatusString(),
                 '\r\n'.join([("%s: %s" % h) for h in headers]),
                 request.response.consumeBody(),
             ), file=self.stdout or sys.stdout)
-        return time.time() - t, time_process_time() - pt, getStatus()
+        return time.time() - t, time.process_time() - pt, getStatus()
 
     def run(self, *args, **kw):
-        t, pt = time.time(), time_process_time()
+        t, pt = time.time(), time.process_time()
         request = self._request(*args, **kw)
         # agroszer: 2008.feb.1.: if a retry occurs in the publisher,
         # the response will be LOST, so we must accept the returned request
         request = _publish(request, handle_errors=False)
         getStatus = getattr(request.response, 'getStatus', lambda: None)
 
-        return time.time() - t, time_process_time() - pt, getStatus()
+        return time.time() - t, time.process_time() - pt, getStatus()
 
     def debug(self, *args, **kw):
         out = self.stdout or sys.stdout
