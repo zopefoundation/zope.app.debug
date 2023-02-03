@@ -14,17 +14,17 @@
 
 import unittest
 
-from ZODB.MappingStorage import MappingStorage
 from ZODB.DB import DB
-from zope.app.debug.debug import Debugger
-
+from ZODB.MappingStorage import MappingStorage
 from zope.component.testlayer import ZCMLFileLayer
 from zope.security.management import endInteraction
 
 import zope.app.debug.tests
+from zope.app.debug.debug import Debugger
+
 
 if str is bytes:
-    from io import BytesIO as StringIO  # pragma: PY2
+    from io import BytesIO as StringIO
 else:
     from io import StringIO  # pragma: PY3
 

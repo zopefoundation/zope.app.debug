@@ -15,24 +15,29 @@
 
 """
 from __future__ import print_function
+
+
 __docformat__ = 'restructuredtext'
 
 import base64
-import time
 import sys
-
-from pdb import Pdb
+import time
 from io import BytesIO
+from pdb import Pdb
 
-from zope.publisher.publish import publish as _publish, debug_call
-from zope.publisher.browser import TestRequest, setDefaultSkin
+from zope.app.appsetup import config
+from zope.app.appsetup import database
 from zope.app.publication.browser import BrowserPublication
-from zope.app.appsetup import config, database
+from zope.publisher.browser import TestRequest
+from zope.publisher.browser import setDefaultSkin
+from zope.publisher.publish import debug_call
+from zope.publisher.publish import publish as _publish
+
 
 try:
-    from time import process_time as time_process_time  # pragma: PY3
+    from time import process_time as time_process_time
 except ImportError:
-    from time import clock as time_process_time  # pragma: PY2
+    from time import clock as time_process_time
 
 try:
     import urllib.parse as urllib  # pragma: PY3
