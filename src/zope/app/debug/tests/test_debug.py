@@ -13,33 +13,28 @@
 ##############################################################################
 
 import unittest
+from io import StringIO
 
-from ZODB.MappingStorage import MappingStorage
 from ZODB.DB import DB
-from zope.app.debug.debug import Debugger
-
+from ZODB.MappingStorage import MappingStorage
 from zope.component.testlayer import ZCMLFileLayer
 from zope.security.management import endInteraction
 
 import zope.app.debug.tests
-
-if str is bytes:
-    from io import BytesIO as StringIO  # pragma: PY2
-else:
-    from io import StringIO  # pragma: PY3
+from zope.app.debug.debug import Debugger
 
 
 DebugLayer = ZCMLFileLayer(zope.app.debug.tests)
 
 
-class FolderView(object):
+class FolderView:
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
 
     def __call__(self):
-        return u"Hi"
+        return "Hi"
 
 
 class TestDebugger(unittest.TestCase):
@@ -71,7 +66,7 @@ class TestDebugger(unittest.TestCase):
         out = StringIO()
         dbg = Debugger(self.db, stdout=out)
 
-        class Pdb(object):
+        class Pdb:
 
             def __init__(self):
                 self.breaks = set()
@@ -153,7 +148,7 @@ class TestDebugger(unittest.TestCase):
 
         # Request factory
 
-        class Request(object):
+        class Request:
             pub = None
 
             def __init__(self, *args):
@@ -167,7 +162,7 @@ class TestDebugger(unittest.TestCase):
         self.assertIsNotNone(req.pub)
 
         # Body data
-        req = dbg._request(stdin=u'unicode\nlines')
+        req = dbg._request(stdin='unicode\nlines')
         self.assertEqual(req.bodyStream.readlines(),
                          [b'unicode\n', b'lines'])
         req = dbg._request(stdin=b'bytes\nlines')
